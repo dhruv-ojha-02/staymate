@@ -9,7 +9,7 @@ import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from 'cloudinary';
 import hotelRoutes from "./routes/hotels";
 import bookingRoutes from "./routes/my-bookings";
-
+import path from "path";
 
 
 cloudinary.config({
@@ -25,10 +25,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    // origin: process.env.FRONTEND_URL,
-    origin: "https://staymate-levs.onrender.com",
+    origin: process.env.FRONTEND_URL,
+    // origin: "https://staymate-levs.onrender.com",
     credentials: true,
 }));
+
+app.use(express.static(path.join(__dirname, "../../../frontend/dist")));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -36,6 +38,9 @@ app.use("/api/my-hotels", myHotelRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/my-bookings", bookingRoutes);
 
+app.get("*", (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, "../../../frontend/dist/index.html"));
+  });
 
 app.listen(7000, () => {
     console.log("server running on localhost:7000");
